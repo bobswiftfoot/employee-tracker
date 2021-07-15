@@ -10,7 +10,7 @@ VALUES
     ('Artist', 50000.00, 2),
     ('QA Engineer', 40000.00, 3),
     ('Lead Programmer', 100000, 1),
-    ('Lead Artist', 100000, 1);
+    ('Lead Artist', 100000, 2);
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
 VALUES 
