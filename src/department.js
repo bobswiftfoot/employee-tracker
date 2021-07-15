@@ -5,7 +5,8 @@ class Department
 {
     showAllDepartments()
     {
-        const sql = `SELECT * FROM departments`;
+        const sql = `SELECT * FROM departments
+                    ORDER BY departments.id`;
 
         db.query(sql, (err, rows) =>
         {

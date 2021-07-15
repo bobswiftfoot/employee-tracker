@@ -7,7 +7,8 @@ class Role
     {
         const sql = `SELECT roles.id, title, salary, departments.name AS department
                     FROM roles
-                    JOIN departments ON roles.department_id = departments.id`;
+                    JOIN departments ON roles.department_id = departments.id
+                    ORDER BY roles.id`;
 
         db.query(sql, (err, rows) =>
         {
