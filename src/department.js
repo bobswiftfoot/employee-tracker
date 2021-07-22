@@ -8,14 +8,35 @@ class Department
         const sql = `SELECT * FROM departments
                     ORDER BY departments.id`;
 
-        db.query(sql, (err, rows) =>
+        return new Promise((resolve, reject) =>
         {
-            if(err)
+            db.query(sql, (err, rows) =>
+            {
+                if (err)
+                {
+                    console.log(err.message);
+                    reject(err);
+                }
+                console.table(rows);
+                resolve();
+            });
+        });
+    }
+
+    addDepartment(name)
+    {
+        const sql = `INSERT INTO departments (name)
+                    VALUES (?)`;
+        const params = [name];
+
+        db.query(sql, params, (err, result) =>
+        {
+            if (err)
             {
                 console.log(err.message);
                 return;
             }
-            console.table(rows);
+            console.log("Added " + name + " to the database.");
         });
     }
 }

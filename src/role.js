@@ -10,14 +10,35 @@ class Role
                     JOIN departments ON roles.department_id = departments.id
                     ORDER BY roles.id`;
 
-        db.query(sql, (err, rows) =>
+        return new Promise((resolve, reject) =>
         {
-            if(err)
+            db.query(sql, (err, rows) =>
+            {
+                if (err)
+                {
+                    console.log(err.message);
+                    reject(err);
+                }
+                console.table(rows);
+                resolve();
+            });
+        });
+    }
+
+    addRole(title, salary, department_id)
+    {
+        const sql = `INSERT INTO roles (title, salary, department_id)
+                    VALUES (?,?,?)`;
+        const params = [title, salary, department_id];
+
+        db.query(sql, params, (err, result) =>
+        {
+            if (err)
             {
                 console.log(err.message);
                 return;
             }
-            console.table(rows);
+            console.log("Added " + title + " to the database.");
         });
     }
 }
