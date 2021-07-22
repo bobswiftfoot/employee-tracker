@@ -69,10 +69,18 @@ function askMainQuestion()
                         }
                     case 'View All Employees By Department':
                         {
+                            employees.showAllEmployeesByDepartment().then(result =>
+                                {
+                                    askMainQuestion();
+                                });
                             break;
                         }
                     case 'View All Employees By Manager':
                         {
+                            employees.showAllEmployeesByManager().then(result =>
+                                {
+                                    askMainQuestion();
+                                });
                             break;
                         }
                     case 'Add Employee':
@@ -85,6 +93,10 @@ function askMainQuestion()
                         }
                     case 'Remove Employee':
                         {
+                            employees.deleteEmployee().then(result =>
+                                {
+                                    askMainQuestion();
+                                });
                             break;
                         }
                     case 'Update Employee Role':
@@ -127,7 +139,7 @@ function askMainQuestion()
                         {
                             break;
                         }
-                    case 'View Total Utilized Budget':
+                    case 'View Total Utilized Budget of a Department':
                         {
                             break;
                         }
