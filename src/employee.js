@@ -203,7 +203,7 @@ class Employee
                         {
                             let employeeSql = '';
                             let params = '';
-                            if (response.employee_manager === "None")
+                            if (response.manager === "None")
                             {
                                 employeeSql = `INSERT INTO employees (first_name, last_name, role_id)
                                                 VALUES (?,?,?)`;
