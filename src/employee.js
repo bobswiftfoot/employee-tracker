@@ -341,10 +341,21 @@ class Employee
                     }
                 ])
                     .then(response =>
-                    {
-                        const employeeSql =  `UPDATE employees SET manager_id = ? 
-                                        WHERE id = ?`;
-                        const params = [response.manager.split(" ")[0], response.employee.split(" ")[0]];
+                    {                            
+                        let employeeSql = '';
+                        let params = '';
+                        if (response.manager === "None")
+                        {
+                            employeeSql = `UPDATE employees SET manager_id = NULL 
+                                            WHERE id = ?`;
+                            params = [response.employee.split(" ")[0]];
+                        }
+                        else
+                        {
+                            employeeSql =  `UPDATE employees SET manager_id = ? 
+                            WHERE id = ?`;
+                            params = [response.manager.split(" ")[0], response.employee.split(" ")[0]];
+                        }
 
                         db.query(employeeSql, params, (err, result) =>
                         {
