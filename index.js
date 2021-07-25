@@ -1,11 +1,11 @@
 const Department = require('./src/department.js');
 const Roles = require('./src/role.js');
 const Employees = require('./src/employee.js');
+const inquirer = require("inquirer");
 
 const departments = new Department();
 const roles = new Roles();
 const employees = new Employees();
-const inquirer = require("inquirer");
 
 async function main()
 {
@@ -51,7 +51,7 @@ function askMainQuestion()
             'View All Departments',
             'Add Department',
             'Remove Department',
-            'View Total Utilized Budget',
+            'View Total Utilized Budget of a Department',
             'Quit']
         }
     ])
@@ -101,10 +101,18 @@ function askMainQuestion()
                         }
                     case 'Update Employee Role':
                         {
+                            employees.updateEmployeeRole().then(result =>
+                                {
+                                    askMainQuestion();
+                                });
                             break;
                         }
                     case 'Update Employee Manager':
                         {
+                            employees.updateEmployeeManager().then(result =>
+                                {
+                                    askMainQuestion();
+                                });
                             break;
                         }
                     case 'View All Roles':
@@ -116,11 +124,19 @@ function askMainQuestion()
                             break;
                         }
                     case 'Add Role':
-                        {
+                        {                            
+                            roles.addRole().then(result =>
+                                {
+                                    askMainQuestion();
+                                });
                             break;
                         }
                     case 'Remove Role':
-                        {
+                        {                            
+                            roles.deleteRole().then(result =>
+                                {
+                                    askMainQuestion();
+                                });
                             break;
                         }
                     case 'View All Departments':
@@ -132,15 +148,27 @@ function askMainQuestion()
                             break;
                         }
                     case 'Add Department':
-                        {
+                        {                          
+                            departments.addDepartment().then(result =>
+                                {
+                                    askMainQuestion();
+                                });
                             break;
                         }
                     case 'Remove Department':
-                        {
+                        {                          
+                            departments.deleteDepartment().then(result =>
+                                {
+                                    askMainQuestion();
+                                });
                             break;
                         }
                     case 'View Total Utilized Budget of a Department':
-                        {
+                        {                          
+                            departments.showTotalBudget().then(result =>
+                                {
+                                    askMainQuestion();
+                                });
                             break;
                         }
                     case 'Quit':

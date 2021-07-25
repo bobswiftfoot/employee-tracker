@@ -19,4 +19,4 @@ VALUES
     ('Robert', 'Bruce', 3, 1),
     ('Peter', 'Greenaway', 2, 2),
     ('Derek', 'Jarman', 1, 1),
-    ('Paolo', 'Pasolini', 1, 1);
+    ('Paolo', 'Pasolini', 2, 2);

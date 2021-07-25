@@ -6,7 +6,7 @@ class Employee
 {
     showAllEmployees()
     {
-        const sql = `SELECT e.id, e.first_name, e.last_name, roles.title AS title, departments.name AS department, roles.salary AS salary, IFNULL(CONCAT(m.first_name, ' ', m.last_name),null) AS manager
+        const employeeSql = `SELECT e.id, e.first_name, e.last_name, roles.title AS title, departments.name AS department, roles.salary AS salary, IFNULL(CONCAT(m.first_name, ' ', m.last_name),null) AS manager
                     FROM employees e
                     INNER JOIN roles ON e.role_id = roles.id
                     INNER JOIN departments ON roles.department_id = departments.id
@@ -15,7 +15,7 @@ class Employee
 
         return new Promise((resolve, reject) =>
         {
-            db.query(sql, (err, rows) =>
+            db.query(employeeSql, (err, rows) =>
             {
                 if (err)
                 {
@@ -58,7 +58,7 @@ class Employee
                 ])
                     .then(response =>
                     {
-                        const sql = `SELECT e.id, e.first_name, e.last_name, roles.title AS title, departments.name AS department, roles.salary AS salary, IFNULL(CONCAT(m.first_name, ' ', m.last_name),null) AS manager
+                        const employeeSql = `SELECT e.id, e.first_name, e.last_name, roles.title AS title, departments.name AS department, roles.salary AS salary, IFNULL(CONCAT(m.first_name, ' ', m.last_name),null) AS manager
                                     FROM employees e
                                     INNER JOIN roles ON e.role_id = roles.id
                                     INNER JOIN departments ON roles.department_id = departments.id AND departments.id = ?
@@ -67,7 +67,7 @@ class Employee
 
                         const params = [response.department.split(" ")[0]];
 
-                        db.query(sql, params, (err, rows) =>
+                        db.query(employeeSql, params, (err, rows) =>
                         {
                             if (err)
                             {
@@ -113,7 +113,7 @@ class Employee
                 ])
                     .then(response =>
                     {
-                        const sql = `SELECT e.id, e.first_name, e.last_name, roles.title AS title, departments.name AS department, roles.salary AS salary, IFNULL(CONCAT(m.first_name, ' ', m.last_name),null) AS manager
+                        const employeeSql = `SELECT e.id, e.first_name, e.last_name, roles.title AS title, departments.name AS department, roles.salary AS salary, IFNULL(CONCAT(m.first_name, ' ', m.last_name),null) AS manager
                                     FROM employees e
                                     INNER JOIN roles ON e.role_id = roles.id
                                     INNER JOIN departments ON roles.department_id = departments.id 
@@ -122,7 +122,7 @@ class Employee
 
                         const params = [response.mananger.split(" ")[0]];
 
-                        db.query(sql, params, (err, rows) =>
+                        db.query(employeeSql, params, (err, rows) =>
                         {
                             if (err)
                             {
@@ -189,13 +189,13 @@ class Employee
                         {
                             type: 'list',
                             message: 'Enter the Role of the Employee: ',
-                            name: 'employee_role',
+                            name: 'role',
                             choices: roles,
                         },
                         {
                             type: 'list',
                             message: 'Who does this employee report to?',
-                            name: 'employee_manager',
+                            name: 'manager',
                             choices: managers,
                         }
                     ])
@@ -207,13 +207,13 @@ class Employee
                             {
                                 employeeSql = `INSERT INTO employees (first_name, last_name, role_id)
                                                 VALUES (?,?,?)`;
-                                params = [response.first_name, response.last_name, response.employee_role.split(" ")[0]];
+                                params = [response.first_name, response.last_name, response.role.split(" ")[0]];
                             }
                             else
                             {
                                 employeeSql = `INSERT INTO employees (first_name, last_name, role_id, manager_id)
                                                 VALUES (?,?,?,?)`;
-                                params = [response.first_name, response.last_name, response.employee_role.split(" ")[0], response.employee_manager.split(" ")[0]];
+                                params = [response.first_name, response.last_name, response.role.split(" ")[0], response.manager.split(" ")[0]];
                             }
 
                             db.query(employeeSql, params, (err, result) =>
@@ -232,26 +232,132 @@ class Employee
         });
     }
 
-    updateEmployee(employee_id, role_id)
+    updateEmployeeRole()
     {
-        const sql = `UPDATE employees SET role_id = ? 
-                    WHERE id = ?`;
-        const params = [role_id, employee_id];
-
-        db.query(sql, params, (err, result) =>
+        return new Promise((resolve, reject) =>
         {
-            if (err)
+            //First get all the roles
+            db.query(`SELECT id, title FROM roles`, (err, result) =>
             {
-                console.log(err.message);
-            }
-            else if (!result.affectedRows)
+                if (err)
+                {
+                    console.log(err.message);
+                    reject(err);
+                }
+
+                //Put all the rows into an array
+                let roles = [];
+                for (let i = 0; i < result.length; i++)
+                {
+                    roles.push(result[i].id + " " + result[i].title);
+                }
+
+                //Get all the employee names
+                db.query(`SELECT id, first_name, last_name FROM employees`, (err, result) =>
+                {
+                    if (err)
+                    {
+                        console.log(err.message);
+                        reject(err);
+                    }
+
+                    //Put all the names into an array
+                    let employees = [];
+                    for (let i = 0; i < result.length; i++)
+                    {
+                        employees.push(result[i].id + " " + result[i].first_name + " " + result[i].last_name);
+                    }
+
+                    inquirer.prompt([
+                        {
+                            type: 'list',
+                            message: 'Which employee to update?',
+                            name: 'employee',
+                            choices: employees,
+                        },
+                        {
+                            type: 'list',
+                            message: 'Enter the new Role of the Employee: ',
+                            name: 'role',
+                            choices: roles,
+                        }
+                    ])
+                        .then(response =>
+                        {
+                            const employeeSql =  `UPDATE employees SET role_id = ? 
+                                            WHERE id = ?`;
+                            const params = [response.role.split(" ")[0], response.employee.split(" ")[0]];
+
+                            db.query(employeeSql, params, (err, result) =>
+                            {
+                                if (err)
+                                {
+                                    console.log(err.message);
+                                    reject(err);
+                                }
+                                console.log("Updated employee.");
+                                resolve();
+                            });
+                        });
+                });
+            });
+        });
+    }
+
+    updateEmployeeManager()
+    {
+        return new Promise((resolve, reject) =>
+        {
+            //Get all the employee names
+            db.query(`SELECT id, first_name, last_name FROM employees`, (err, result) =>
             {
-                console.log("Candidate not found");
-            }
-            else
-            {
-                console.log("Updated employee.");
-            }
+                if (err)
+                {
+                    console.log(err.message);
+                    reject(err);
+                }
+
+                //Put all the names into an array
+                let employees = [];
+                for (let i = 0; i < result.length; i++)
+                {
+                    employees.push(result[i].id + " " + result[i].first_name + " " + result[i].last_name);
+                }
+                let managers = [...employees];
+                managers.push('None');
+
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        message: 'Which employee to update?',
+                        name: 'employee',
+                        choices: employees,
+                    },
+                    {
+                        type: 'list',
+                        message: 'Enter the new Manager of the Employee: ',
+                        name: 'manager',
+                        choices: managers,
+                    }
+                ])
+                    .then(response =>
+                    {
+                        const employeeSql =  `UPDATE employees SET manager_id = ? 
+                                        WHERE id = ?`;
+                        const params = [response.manager.split(" ")[0], response.employee.split(" ")[0]];
+
+                        db.query(employeeSql, params, (err, result) =>
+                        {
+                            if (err)
+                            {
+                                console.log(err.message);
+                                reject(err);
+                            }
+                            console.log("Updated employee.");
+                            resolve();
+                        });
+                    });
+            });
         });
     }
 
@@ -285,16 +391,16 @@ class Employee
                 ])
                 .then(response =>
                 {
-                    const sql = `DELETE FROM employees WHERE id = ?`;
+                    const employeeSql = `DELETE FROM employees WHERE id = ?`;
                     const params = [response.employee.split(" ")[0]];
-                    db.query(sql,params, (err, rows) =>
+                    db.query(employeeSql, params, (err, rows) =>
                     {
                         if (err)
                         {
                             console.log(err.message);
                             reject(err);
                         }
-                        console.log(response.employee + " has been removed.")
+                        console.log("Employee has been removed.")
                         resolve();
                     });
                 });
